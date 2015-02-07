@@ -5,7 +5,9 @@ library(pipeR)
 library(zoo)
 library(dplyr)
 library(dygraphs)
-#
+################################################################
+#UI component
+#Header
 dashboard_header <- dashboardHeader(
   title = "JGB Viewer",
   dropdownMenuOutput("messageMenu")
@@ -34,15 +36,17 @@ dashboard_body <- dashboardBody(
       p("This is a  Japanese Government Bond(JGB) rate viewer."),
       h2("Code"),
       p("You can download all codes from the following URL on Github.")
+      a(href="https://github.com/teramonagi/JGBViewer")
     )
   )
 )
-
+#Combine UI components
 ui <- dashboardPage(
   dashboard_header,
   dashboard_sidebar,
   dashboard_body
 )
+################################################################
 #Server
 server <- function(input, output) {
   HEADER <- paste0(c(1:10,15,20,25,30,40), "Y")
@@ -66,5 +70,6 @@ server <- function(input, output) {
     )
   })
 }
-
+################################################################
+#Application
 shinyApp(ui, server)
