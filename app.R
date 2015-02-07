@@ -35,8 +35,8 @@ dashboard_body <- dashboardBody(
       h2("What's this?"),
       p("This is a  Japanese Government Bond(JGB) rate viewer."),
       h2("Code"),
-      p("You can download all codes from the following URL on Github.")
-      a(href="https://github.com/teramonagi/JGBViewer")
+      p("You can download all codes from the following URL on Github."),
+      a(href="https://github.com/teramonagi/JGBViewer", "https://github.com/teramonagi/JGBViewer")
     )
   )
 )
