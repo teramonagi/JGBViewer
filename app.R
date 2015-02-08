@@ -9,7 +9,7 @@ library(dygraphs)
 #UI component
 #Header
 dashboard_header <- dashboardHeader(
-  title = "JGB Viewer",
+  title = "JGB Viewer(Beta)",
   dropdownMenuOutput("messageMenu")
 )
 #Sidebar
@@ -50,14 +50,14 @@ ui <- dashboardPage(
 #Server
 server <- function(input, output) {
   HEADER <- paste0(c(1:10,15,20,25,30,40), "Y")
-  URL_CURRENT <- "https://www.mof.go.jp/english/jgbs/reference/interest_rate/jgbcme.csv"
-  URL_OLD     <- "https://www.mof.go.jp/english/jgbs/reference/interest_rate/historical/jgbcme_all.csv"
+  URL_CURRENT <- "http://www.mof.go.jp/english/jgbs/reference/interest_rate/jgbcme.csv"
+  URL_OLD     <- "http://www.mof.go.jp/english/jgbs/reference/interest_rate/historical/jgbcme_all.csv"
   jgb_current <- read.csv(URL_CURRENT, stringsAsFactors=FALSE, na.strings = "-") %>>% setNames(c("Date", HEADER))
   jgb_old <- read.csv(URL_OLD, stringsAsFactors=FALSE, na.strings = "-") %>>% setNames(c("Date", HEADER))
   jgb <- rbind(jgb_old, jgb_current) %>>% read.zoo
   output$dygraph  <- renderDygraph({
     jgb[,"10Y"] %>>%
-      dygraph(main="JGB Interest Rate") %>>% 
+      dygraph(main="JGB Interest Rate(10Y only") %>>% 
       dyRangeSelector(dateWindow = c("2012-01-01", as.character(Sys.Date())))
   })
   output$messageMenu <- renderDropdownMenu({
