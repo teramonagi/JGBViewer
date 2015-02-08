@@ -1,0 +1,17 @@
+JGBViewer package
+=============================================================
+
+## What's this
+
+This is a Japanese Government Bond(JGB) rate viewer application developed by Shiny and R.
+
+## Installation
+
+You can install JGBViewer package from github using the devtools package
+
+```{r}
+library(devtools)
+install_github('teramonagi/JGBViewer')
+```
+### License
+JGBViewer is licensed under the MIT License. 

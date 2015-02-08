@@ -69,6 +69,8 @@ server <- function(input, output) {
   output$dygraph  <- renderDygraph({
     selected_term <- input$term
     jgb[, selected_term] %>>%
+      na.locf %>>% 
+      na.omit %>>% 
       dygraph(main=paste0("JGB Interest Rate - ", selected_term, " -")) %>>% 
       dyRangeSelector(dateWindow = c(as.character(Sys.Date()-365), as.character(Sys.Date())))
   })
