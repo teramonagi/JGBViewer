@@ -17,7 +17,8 @@ install_github('teramonagi/JGBViewer')
 
 ## How to run on your PC(local)
 You can run this application by the folloinwg procedures:
-1. Open JGBViewer.Proj file by RStudio(directory setting purpose mainly.)
+
+1. Open JGBViewer.Proj file by RStudio(directory setting purpose mainly)
 2. Run the following commands on your R console:
 ```{r}
 library(shiny)
