@@ -19,31 +19,53 @@ dashboard_header <- dashboardHeader(
 )
 #Sidebar
 dashboard_sidebar <- dashboardSidebar(
+  #sidebarSearchForm(label = "Doesn't work yet...", "searchText", "searchButton"),
   sidebarMenu(
-    menuItem("Main",  tabName="main",  icon=icon("dashboard")),
+    menuItem(
+      "Charts", icon = icon("bar-chart-o"),
+      menuSubItem("Single   time series", tabName="sts", icon=icon("line-chart")),
+      menuSubItem("Multiple time series", tabName="mts",  icon=icon("line-chart"))
+    ),
+    menuItem("Data Analysis", icon=icon("th"), tabName="widgets", badgeLabel="soon", badgeColor="green"),
     menuItem("About", tabName="about", icon=icon("info-circle"))
   )
 )
 #Body
 dashboard_body <- dashboardBody(
   tabItems(
-    # First tab content
+    # Single time series
     tabItem(
-      tabName = "main",
+      tabName = "sts",
+      h2("Single time series plot"),
       fluidRow(
         box(
-          title="One term year plot", status="primary", solidHeader=TRUE, collapsible=TRUE, width=12,
-          dygraphOutput("dygraph")
+          title="Choose the term of Interest Rate", status="primary", solidHeader=TRUE, width=8,
+          selectInput("sts_term", "", HEADER, selected="10Y")
         )
       ),
       fluidRow(
         box(
-          title="Choose the term of Interest Rate", status="primary", solidHeader=TRUE, width=8,
-          selectInput("term", "", HEADER, selected="10Y")
+          title="One term year plot", status="primary", solidHeader=TRUE, collapsible=TRUE, width=12,
+          dygraphOutput("sts_dygraph")
         )
       )
     ),    
-    # Second tab content
+    # Multiple time series
+    tabItem(
+      tabName = "mts",
+      h2("Multiple time series plot"),
+      fluidRow(
+        box(
+          title="Terms", status="primary", solidHeader=TRUE, width=2,
+          checkboxGroupInput("mts_terms", "", HEADER, selected=HEADER)
+        ),
+        box(
+          title="Multiple term plot", status="primary", solidHeader=TRUE, collapsible=TRUE, width=10,
+          dygraphOutput("mts_dygraph")
+        )
+      )
+    ),
+    # About tab content
     tabItem(
       tabName = "about",
       h2("What's this?"),
@@ -66,12 +88,21 @@ server <- function(input, output) {
   jgb_current <- read.csv(URL_CURRENT, stringsAsFactors=FALSE, na.strings = "-") %>>% setNames(c("Date", HEADER))
   jgb_old <- read.csv(URL_OLD, stringsAsFactors=FALSE, na.strings = "-") %>>% setNames(c("Date", HEADER))
   jgb <- rbind(jgb_old, jgb_current) %>>% read.zoo
-  output$dygraph  <- renderDygraph({
-    selected_term <- input$term
+  output$sts_dygraph <- renderDygraph({
+    selected_term <- input$sts_term
     jgb[, selected_term] %>>%
       na.locf %>>% 
       na.omit %>>% 
       dygraph(main=paste0("JGB Interest Rate - ", selected_term, " -")) %>>% 
+      dySeries("V1", label=paste0(selected_term, "(%)")) %>%
+      dyRangeSelector(dateWindow = c(as.character(Sys.Date()-365), as.character(Sys.Date())))
+  })
+  output$mts_dygraph <- renderDygraph({
+    selected_terms <- input$mts_terms
+    jgb[, selected_terms] %>>%
+      na.locf %>>% 
+      na.omit %>>% 
+      dygraph(main="JGB Interest Rate") %>>% 
       dyRangeSelector(dateWindow = c(as.character(Sys.Date()-365), as.character(Sys.Date())))
   })
   output$messageMenu <- renderDropdownMenu({
