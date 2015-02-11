@@ -1,4 +1,4 @@
-JGBViewer package
+JGBViewer - web application by Shiny and R - 
 =============================================================
 
 ## What's this
@@ -26,12 +26,14 @@ runApp()
 ```
 
 ## Data source
-The data of this application is based on the following link:
+The data of this application is the published data from Ministry of Finance in Japan.
+You can access the original data from the following link:
 - http://www.mof.go.jp/english/jgbs/reference/interest_rate/index.htm
 
 ## Upcoming new features...
 - New vizualization
   - Term structure view
+  - Daily Change of interest rate view
 - Data analysis
   - Principal Component Analysis(PCA)
   - Running Volatility
