@@ -30,6 +30,8 @@ The data of this application is based on the following link:
 - http://www.mof.go.jp/english/jgbs/reference/interest_rate/index.htm
 
 ## Upcoming new features...
+- New vizualization
+  - Term structure view
 - Data analysis
   - Principal Component Analysis(PCA)
   - Running Volatility
