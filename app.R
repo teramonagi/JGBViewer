@@ -24,7 +24,7 @@ dashboard_sidebar <- dashboardSidebar(
     menuItem(
       "Charts", icon = icon("bar-chart-o"),
       menuSubItem("Single   time series", tabName="sts", icon=icon("line-chart")),
-      menuSubItem("Multiple time series", tabName="mts",  icon=icon("line-chart"))
+      menuSubItem("Multiple time series", tabName="mts", icon=icon("line-chart"))
     ),
     menuItem("Data Analysis", icon=icon("th"), tabName="widgets", badgeLabel="soon", badgeColor="green"),
     menuItem("About", tabName="about", icon=icon("info-circle"))
@@ -56,11 +56,14 @@ dashboard_body <- dashboardBody(
       h2("Multiple time series plot"),
       fluidRow(
         box(
-          title="Terms", status="primary", solidHeader=TRUE, width=2,
-          checkboxGroupInput("mts_terms", "", HEADER, selected=HEADER)
-        ),
+          title="Terms", status="primary", solidHeader=TRUE, width=12,
+          actionButton("mts_selectall", label="Select All"),
+          checkboxGroupInput("mts_terms", "", HEADER, selected=HEADER, inline=TRUE)
+        )
+      ),
+      fluidRow(
         box(
-          title="Multiple term plot", status="primary", solidHeader=TRUE, collapsible=TRUE, width=10,
+          title="Multiple term plot", status="primary", solidHeader=TRUE, collapsible=TRUE, width=12,
           dygraphOutput("mts_dygraph")
         )
       )
@@ -72,7 +75,7 @@ dashboard_body <- dashboardBody(
       p("This is a Japanese Government Bond(JGB) rate viewer application developed by Shiny and R."),
       h2("Code"),
       p("You can download all codes from the following URL on Github."),
-      a(href="https://github.com/teramonagi/JGBViewer", "https://github.com/teramonagi/JGBViewer")
+      a(href="https://github.com/teramonagi/JGBViewer", "https://github.com/teramonagi/JGBViewer") %>>% p
     )
   )
 )
@@ -84,26 +87,41 @@ ui <- dashboardPage(
 )
 ################################################################
 #Server
-server <- function(input, output) {
+server <- function(input, output, session) {
+  # Variables in server 
+  mts_selectall <- reactiveValues(pushed = FALSE)
   jgb_current <- read.csv(URL_CURRENT, stringsAsFactors=FALSE, na.strings = "-") %>>% setNames(c("Date", HEADER))
   jgb_old <- read.csv(URL_OLD, stringsAsFactors=FALSE, na.strings = "-") %>>% setNames(c("Date", HEADER))
   jgb <- rbind(jgb_old, jgb_current) %>>% read.zoo
-  output$sts_dygraph <- renderDygraph({
-    selected_term <- input$sts_term
+  # Inner functions
+  dygraph_plot <- function(selected_term)
+  {
+    if(length(selected_term) == 0){return(NULL)}
+    
     jgb[, selected_term] %>>%
       na.locf %>>% 
-      na.omit %>>% 
-      dygraph(main=paste0("JGB Interest Rate - ", selected_term, " -")) %>>% 
-      dySeries("V1", label=paste0(selected_term, "(%)")) %>%
-      dyRangeSelector(dateWindow = c(as.character(Sys.Date()-365), as.character(Sys.Date())))
+      na.omit %>>% {
+        if(length(selected_term)==1){
+          dygraph(., main=paste0("JGB Interest Rate - ", selected_term, " -")) %>>% 
+          dySeries("V1", label=paste0(selected_term, "(%)"))
+        } else{
+          dygraph(., main="JGB Interest Rate") 
+        }  
+      } %>>% 
+      dyRangeSelector(dateWindow = c(as.character(Sys.Date()-365), as.character(Sys.Date())))  
+  }
+  # Controller
+  output$sts_dygraph <- renderDygraph({input$sts_term  %>>% dygraph_plot})
+  output$mts_dygraph <- renderDygraph({input$mts_terms %>>% dygraph_plot})
+  observe({
+    if(input$mts_selectall!=0){mts_selectall$pushed <- TRUE}
   })
-  output$mts_dygraph <- renderDygraph({
-    selected_terms <- input$mts_terms
-    jgb[, selected_terms] %>>%
-      na.locf %>>% 
-      na.omit %>>% 
-      dygraph(main="JGB Interest Rate") %>>% 
-      dyRangeSelector(dateWindow = c(as.character(Sys.Date()-365), as.character(Sys.Date())))
+  observe({
+    if(mts_selectall$pushed){
+      all_or_nothing <- if(length(input$mts_terms)!=length(HEADER)){HEADER}
+      updateCheckboxGroupInput(session, "mts_terms", choices=HEADER, selected=all_or_nothing, inline=TRUE)
+      mts_selectall$pushed <- FALSE
+    }    
   })
   output$messageMenu <- renderDropdownMenu({
     dropdownMenu(

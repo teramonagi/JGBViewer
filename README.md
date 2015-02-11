@@ -29,5 +29,10 @@ runApp()
 The data of this application is based on the following link:
 - http://www.mof.go.jp/english/jgbs/reference/interest_rate/index.htm
 
+## Upcoming new features...
+- Data analysis
+  - Principal Component Analysis(PCA)
+  - Running Volatility
+  
 ## License
 JGBViewer is licensed under the MIT License. 
