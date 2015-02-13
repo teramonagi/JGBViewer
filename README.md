@@ -29,9 +29,13 @@ runApp()
 The data of this application is based on the following link:
 - http://www.mof.go.jp/english/jgbs/reference/interest_rate/index.htm
 
-## Upcoming new features...
-- New vizualization
+## Current supported features...
+- Data vizualizaton
+  - Single time series plot
+  - Multiple time series plot
   - Term structure view
+
+## Upcoming new features...
 - Data analysis
   - Principal Component Analysis(PCA)
   - Running Volatility
