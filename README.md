@@ -35,13 +35,14 @@ You can access the original data from the following link:
   - Single time series plot
   - Multiple time series plot
   - Term structure view
+- Data analysis
+  - Running Volatility
 
 ## Upcoming new features...
 - Data vizualization
   - Daily Change of interest rate view
 - Data analysis
   - Principal Component Analysis(PCA)
-  - Running Volatility
   
 ## License
 JGBViewer is licensed under the MIT License. 
