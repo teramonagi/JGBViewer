@@ -1,12 +1,12 @@
 #Library
 library(shiny)
-library(shinythemes)
 library(shinydashboard)
 library(pipeR)
 library(zoo)
 library(dplyr)
 library(dygraphs)
 library(metricsgraphics)
+library(RcppRoll)
 #Constant(Run per application launch not user)
 TERMS_INT <- c(1:10,15,20,25,30,40)
 TERMS_STR <- paste0(TERMS_INT, "Y")
@@ -170,7 +170,13 @@ server <- function(input, output, session) {
     terms <- input$rv_terms
     days  <- input$rv_days
     if(length(terms) == 0){return(NULL)}    
-    vols <- sqrt(256)*100*(jgb_diff[, terms] %>>% rollapplyr(days, sd))
+    vols <- sqrt(256)*100*(
+      jgb_diff[, terms] %>>% 
+        roll_sdr(days) %>>%
+        {data.frame(index(jgb_diff), .)} %>>%
+        setNames(c("Date", terms)) %>>%
+        read.zoo
+    )
     dygraph_plot(vols, "Running Volatility(%)", terms)
   })
   output$ts_metricsgraphics <- renderMetricsgraphics({
