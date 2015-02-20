@@ -1,1 +1,2 @@
-R CMD BATCH --no-save deploy.R
+cd $(dirname $BASH_SOURCE)
+Rscript --no-save deploy.R
